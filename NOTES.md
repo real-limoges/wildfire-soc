@@ -75,3 +75,25 @@ AWND units) is provisional until checked against the downloaded files —
 expect and plan for a validation/fix pass. Verified release facts so far
 (via web search only): fire25_1 published April 2026; adds 516 fires from
 2025 season; removed dup 1984 HURRICANE; added GlobalID field.
+
+### Environment confirmed (bootstrap probe, 2026-07-02 ~01:07 UTC)
+- Python 3.11.15, 4 cpus, 32 GB free disk. No geo stack preinstalled →
+  installed from PyPI (PyPI is proxy-exempt): geopandas 1.1.4, pyogrio 0.13.0,
+  shapely 2.1.2, pandas 3.0.3, pyarrow 24.0.0, pyproj 3.7.2.
+- **BLOCKER**: the sandbox egress policy denies CONNECT to every data host we
+  need — www.ncei.noaa.gov, data.ca.gov, gis.data.ca.gov, frap.fire.ca.gov,
+  services1.arcgis.com, opendata.arcgis.com (proxy status shows
+  "gateway answered 403 to CONNECT (policy denial)"). GitHub + PyPI are open.
+  Per proxy README this must be reported, not worked around → asked the user
+  to widen the environment's network allowlist.
+
+### Smoke test (2026-07-02)
+Wrote tests/smoke_test.py: builds a synthetic FRAP gdb (OpenFileGDB via
+pyogrio), fake 7-division shapefile, synthetic climdiv + GSOM files, runs
+s01–s09 end to end, asserts every documented decision (dedupe canonical
+choice, WKB-dup collapse, date/era/size/geometry flags, pre-1895 and
+no-alarm-month climate-missing reasons, join values, wind coverage), then
+rebuilds from scratch and asserts byte-identical artifact. PASSED after two
+fixes: mkdir for gdb parent dir; s03 groupby indices were positional
+(pandas .indices) → switched to label-based .groups (real bug caught in
+review, would have mis-paired rows on the filtered frame).

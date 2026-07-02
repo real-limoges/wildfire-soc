@@ -1,8 +1,8 @@
-# Versions pinned to the environment the artifact was built with; see
-# PROVENANCE.md for the full build environment record.
-geopandas
-pyogrio
-shapely>=2.0
-pandas
-pyarrow
-pyproj
+# Exact versions the artifact was built and smoke-tested with
+# (Python 3.11.15; see PROVENANCE.md for the full build environment record).
+geopandas==1.1.4
+pyogrio==0.13.0
+shapely==2.1.2
+pandas==3.0.3
+pyarrow==24.0.0
+pyproj==3.7.2

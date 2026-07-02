@@ -12,7 +12,10 @@ PY := python3
 P := data/processed
 A := artifacts
 
-.PHONY: all download clean s01 s02 s03 s04 s05 s06 s07 s08 s09
+.PHONY: all download clean smoke s01 s02 s03 s04 s05 s06 s07 s08 s09
+
+smoke:
+	$(PY) -m tests.smoke_test
 
 all: s09
 

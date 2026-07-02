@@ -6,12 +6,16 @@ of the pipeline. artifacts/SCHEMA.md points each documented decision at the
 constant or function that implements it.
 """
 
+import os
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-RAW = REPO_ROOT / "data" / "raw"
-PROCESSED = REPO_ROOT / "data" / "processed"
-ARTIFACTS = REPO_ROOT / "artifacts"
+# WILDFIRE_DATA_ROOT relocates data/ and artifacts/ (used by the smoke test;
+# defaults to the repo itself for normal builds).
+DATA_ROOT = Path(os.environ.get("WILDFIRE_DATA_ROOT", REPO_ROOT))
+RAW = DATA_ROOT / "data" / "raw"
+PROCESSED = DATA_ROOT / "data" / "processed"
+ARTIFACTS = DATA_ROOT / "artifacts"
 
 # ---------------------------------------------------------------------------
 # Source pinning (see PROVENANCE.md for URLs, versions, and checksums)
@@ -19,7 +23,7 @@ ARTIFACTS = REPO_ROOT / "artifacts"
 
 # CAL FIRE FRAP historical fire perimeters, release fire25_1 (April 2026).
 FRAP_RELEASE = "fire25_1"
-FRAP_GDB = RAW / "frap" / "fire25_1.gdb"
+FRAP_GDB = RAW / "frap" / f"{FRAP_RELEASE}.gdb"
 FRAP_FIRE_LAYER = "firep25_1"  # wildfire perimeters layer inside the gdb
 
 # NOAA nClimDiv monthly divisional data. Downloaded under stable local names;

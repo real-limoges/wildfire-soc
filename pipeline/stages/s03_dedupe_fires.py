@@ -88,33 +88,34 @@ def main() -> None:
     pairs_checked = 0
     confirmed = 0
 
-    def add_candidates(groups):
+    def add_candidates(frame, keys):
+        """Group `frame` by `keys`; geometry-check every within-group pair.
+
+        Uses index *labels* (stable row ids in gdf), never positions.
+        """
         nonlocal pairs_checked, confirmed
-        for _, idx in groups:
-            idx = list(idx)
-            if len(idx) < 2 or len(idx) > 50:  # >50 same-name rows in a year
-                continue                        # would be a data pathology; none expected
-            for i, j in combinations(idx, 2):
+        for _, labels in frame.groupby(keys).groups.items():
+            labels = list(labels)
+            if len(labels) < 2 or len(labels) > 50:  # >50 same-key rows in a year
+                continue                              # would be a data pathology
+            for a, b in combinations(labels, 2):
                 pairs_checked += 1
-                if _geom_agree(gdf.geometry.iloc[i], gdf.geometry.iloc[j]):
-                    uf.union(gdf.index[i], gdf.index[j])
+                if _geom_agree(gdf.geometry.loc[a], gdf.geometry.loc[b]):
+                    uf.union(a, b)
                     confirmed += 1
 
     with_year = gdf[gdf["fire_year"].notna()]
-    by_irwin = with_year[with_year["irwin_id"].notna()].groupby(
-        ["fire_year", "irwin_id"]).indices.items()
-    add_candidates(((k, v) for k, v in by_irwin))
-    by_name = with_year[with_year["fire_name_norm"].notna()].groupby(
-        ["fire_year", "fire_name_norm"]).indices.items()
-    add_candidates(((k, v) for k, v in by_name))
+    add_candidates(with_year[with_year["irwin_id"].notna()],
+                   ["fire_year", "irwin_id"])
+    add_candidates(with_year[with_year["fire_name_norm"].notna()],
+                   ["fire_year", "fire_name_norm"])
 
     # identical WKB in the same year always collapses, name or not
-    by_wkb = with_year[with_year["_wkb_hash"].notna()].groupby(
-        ["fire_year", "_wkb_hash"]).indices.items()
-    for _, idx in by_wkb:
-        idx = list(idx)
-        for i, j in zip(idx, idx[1:]):
-            uf.union(gdf.index[i], gdf.index[j])
+    for _, labels in with_year[with_year["_wkb_hash"].notna()].groupby(
+            ["fire_year", "_wkb_hash"]).groups.items():
+        labels = list(labels)
+        for a, b in zip(labels, labels[1:]):
+            uf.union(a, b)
             confirmed += 1
 
     log("s03", f"checked {pairs_checked:,} candidate pairs, "
