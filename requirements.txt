@@ -1,0 +1,8 @@
+# Versions pinned to the environment the artifact was built with; see
+# PROVENANCE.md for the full build environment record.
+geopandas
+pyogrio
+shapely>=2.0
+pandas
+pyarrow
+pyproj

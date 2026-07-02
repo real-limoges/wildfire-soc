@@ -1,0 +1,8 @@
+# Raw downloads and intermediates are reproducible via `make download` / `make all`;
+# their identity is pinned by checksums in PROVENANCE.md.
+data/raw/
+data/processed/
+
+__pycache__/
+*.pyc
+.venv/
