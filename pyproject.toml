@@ -1,0 +1,27 @@
+# Python project for the fire-perimeter data pipeline (pipeline/).
+#
+# Dependencies are pinned exactly, and uv.lock additionally pins the full
+# transitive closure, for byte-reproducibility of
+# artifacts/fires_enriched.parquet. Managed with uv:
+#   uv sync            # create .venv from uv.lock
+#   uv run make all    # run the pipeline inside that environment
+[project]
+name = "wildfire-soc"
+version = "0.1.0"
+description = "Reproducible CAL FIRE FRAP fire-perimeter pipeline -> fires_enriched.parquet"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "geopandas==1.0.1",
+    "pyogrio==0.10.0",
+    "shapely==2.0.6",
+    "pyproj==3.6.1",
+    "pandas==2.2.3",
+    "numpy==2.1.3",
+    "pyarrow==18.1.0",
+    "requests==2.32.3",
+]
+
+# The pipeline runs as `python -m pipeline.<stage>` from the repo root; the
+# repo itself is not built or installed as a distributable package.
+[tool.uv]
+package = false
